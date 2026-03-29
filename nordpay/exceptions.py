@@ -12,12 +12,23 @@ class NordPayError(Exception):
         status_code: int | None = None,
         detail: str | None = None,
         response_body: dict | None = None,
+        error_type: str | None = None,
     ) -> None:
         self.message = message
         self.status_code = status_code
         self.detail = detail or message
         self.response_body = response_body
+        self.error_type = error_type or self._extract_error_type(response_body)
         super().__init__(self.message)
+
+    @staticmethod
+    def _extract_error_type(body: dict | None) -> str | None:
+        if not body or not isinstance(body, dict):
+            return None
+        err = body.get("error")
+        if isinstance(err, dict):
+            return err.get("type")
+        return None
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(status={self.status_code}, detail={self.detail!r})"

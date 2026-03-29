@@ -59,13 +59,15 @@ def _build_headers(api_key: str | None) -> dict[str, str]:
 
 def _parse_error(response: httpx.Response) -> NordPayError:
     detail = ""
+    error_type = ""
     body: dict | None = None
     try:
         body = response.json()
         if isinstance(body, dict):
-            # NordPay wraps errors: {"error": {"type": "...", "details": "..."}}
+            # NordPay envelope: {"success": false, "data": null, "error": {"type": "...", "details": "..."}}
             err = body.get("error", {})
             if isinstance(err, dict):
+                error_type = err.get("type", "")
                 detail = err.get("details", "") or err.get("detail", "") or err.get("message", "")
             if not detail:
                 detail = body.get("detail", "") or body.get("message", "") or str(body)
@@ -75,8 +77,9 @@ def _parse_error(response: httpx.Response) -> NordPayError:
         detail = response.text[:500]
 
     status = response.status_code
+    error_msg = f"{error_type}: {detail}" if error_type else f"HTTP {status}: {detail}"
     kwargs: dict[str, Any] = {
-        "message": f"HTTP {status}: {detail}",
+        "message": error_msg,
         "status_code": status,
         "detail": detail,
         "response_body": body,
@@ -167,7 +170,13 @@ class SyncTransport:
             if response.is_success:
                 if not response.content:
                     return None
-                return response.json()
+                body = response.json()
+                # Unwrap ResponseModel envelope: {success, data, error}
+                if isinstance(body, dict) and "success" in body and "data" in body:
+                    if not body["success"]:
+                        raise _parse_error(response)
+                    return body["data"]
+                return body
 
             if not _should_retry(response, attempt, self._max_retries):
                 break
@@ -221,7 +230,13 @@ class AsyncTransport:
             if response.is_success:
                 if not response.content:
                     return None
-                return response.json()
+                body = response.json()
+                # Unwrap ResponseModel envelope: {success, data, error}
+                if isinstance(body, dict) and "success" in body and "data" in body:
+                    if not body["success"]:
+                        raise _parse_error(response)
+                    return body["data"]
+                return body
 
             if not _should_retry(response, attempt, self._max_retries):
                 break
