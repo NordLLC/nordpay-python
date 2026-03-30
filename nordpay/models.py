@@ -208,7 +208,7 @@ class PaginatedInvoices(BaseModel):
     total: int
     offset: int
     limit: int
-    total_pages: int
+    total_pages: int = 0
 
 
 class PaginatedWallets(BaseModel):
@@ -218,7 +218,7 @@ class PaginatedWallets(BaseModel):
     total: int
     offset: int
     limit: int
-    total_pages: int
+    total_pages: int = 0
 
 
 class PaginatedTransactions(BaseModel):
@@ -228,7 +228,7 @@ class PaginatedTransactions(BaseModel):
     total: int
     offset: int
     limit: int
-    total_pages: int
+    total_pages: int = 0
 
 
 # ---------------------------------------------------------------------------
@@ -310,7 +310,7 @@ class PaginatedWithdraws(BaseModel):
     total: int
     offset: int
     limit: int
-    total_pages: int
+    total_pages: int = 0
 
 
 class WithdrawLimit(BaseModel):

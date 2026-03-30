@@ -555,11 +555,12 @@ class _SyncBalance:
         data = self._t.request("GET", "/v1/balance/")
         if isinstance(data, list):
             return [Balance.model_validate(item) for item in data]
-        # API returns flat dict: {"BTC": "0.05", "ETH": "1.25", ...}
         if isinstance(data, dict):
+            # New format: {"balances": {"BTC": "0.05", ...}}
+            balances = data.get("balances", data)
             return [
-                Balance(currency=k, amount=Decimal(str(v)), amount_usd=Decimal("0"))
-                for k, v in data.items()
+                Balance(currency=k, amount=Decimal(str(v)) if v else Decimal("0"), amount_usd=Decimal("0"))
+                for k, v in balances.items()
             ]
         return []
 
@@ -964,11 +965,11 @@ class _AsyncBalance:
         data = await self._t.request("GET", "/v1/balance/")
         if isinstance(data, list):
             return [Balance.model_validate(item) for item in data]
-        # API returns flat dict: {"BTC": "0.05", "ETH": "1.25", ...}
         if isinstance(data, dict):
+            balances = data.get("balances", data)
             return [
-                Balance(currency=k, amount=Decimal(str(v)), amount_usd=Decimal("0"))
-                for k, v in data.items()
+                Balance(currency=k, amount=Decimal(str(v)) if v else Decimal("0"), amount_usd=Decimal("0"))
+                for k, v in balances.items()
             ]
         return []
 
