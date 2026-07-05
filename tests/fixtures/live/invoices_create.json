@@ -1,0 +1,25 @@
+{
+  "id": 2019,
+  "uuid": "e67a3350-7f6b-4077-956a-3fde2445a922",
+  "currency": null,
+  "allowed_currencies": [
+    "USDTTRC20",
+    "USDTERC20"
+  ],
+  "tx_hash": null,
+  "explorer_url": null,
+  "address": null,
+  "amount": "0E-18",
+  "amount_usd": "10.00",
+  "received_amount": "0E-18",
+  "received_amount_usd": "0.00",
+  "confirmations": 0,
+  "created_at": "2026-07-05T09:23:28.359399Z",
+  "expires_at": "2026-07-05T09:53:28.358185Z",
+  "status": "pending",
+  "label": "sdk-drift-probe",
+  "postback_url": null,
+  "success_url": null,
+  "fail_url": null,
+  "url": "https://panel.nord-pay.com/invoice/e67a3350-7f6b-4077-956a-3fde2445a922"
+}

@@ -1,0 +1,10 @@
+{
+  "total_count": 0,
+  "paid_count": 0,
+  "pending_count": 0,
+  "expired_count": 0,
+  "total_amount_usd": "0",
+  "paid_amount_usd": "0",
+  "partially_paid_count": 0,
+  "cancelled_count": 0
+}

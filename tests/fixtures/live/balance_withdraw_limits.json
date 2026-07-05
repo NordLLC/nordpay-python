@@ -1,0 +1,457 @@
+[
+  {
+    "currency": "AVAX",
+    "min_amount": "0.01",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "LINKAVAX",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDCAVAX",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDTAVAX",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "WBTCAVAX",
+    "min_amount": "0.001",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "ETHBASE",
+    "min_amount": "0",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "LINKBASE",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDCBASE",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDTBASE",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "WBTCBASE",
+    "min_amount": "0.001",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "AVAXBEP20",
+    "min_amount": "0.1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "BNB",
+    "min_amount": "0.0015",
+    "max_amount": "0.01720747295968534906588003933",
+    "fee_percent": "1.7",
+    "available_balance": "0.0175"
+  },
+  {
+    "currency": "DOGEBEP20",
+    "min_amount": "10",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "ETHBEP20",
+    "min_amount": "0.002",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "LINKBEP20",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "NEARBEP20",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDCBEP20",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDTBEP20",
+    "min_amount": "1",
+    "max_amount": "40.02684365781710914454277286",
+    "fee_percent": "1.7",
+    "available_balance": "40.7073"
+  },
+  {
+    "currency": "WBTCBEP20",
+    "min_amount": "0.001",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "BTC",
+    "min_amount": "0.001",
+    "max_amount": "0.0001769911504424778761061946903",
+    "fee_percent": "1.7",
+    "available_balance": "0.00018"
+  },
+  {
+    "currency": "ETH",
+    "min_amount": "0.002",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "LINKERC20",
+    "min_amount": "2",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "NEARERC20",
+    "min_amount": "10",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDCERC20",
+    "min_amount": "5",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDTERC20",
+    "min_amount": "5",
+    "max_amount": "4.916420845624385447394296952",
+    "fee_percent": "1.7",
+    "available_balance": "5"
+  },
+  {
+    "currency": "WBTCERC20",
+    "min_amount": "0.001",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "GNO",
+    "min_amount": "0.01",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "LINKGNO",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDCGNO",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDTGNO",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "WBTCGNO",
+    "min_amount": "0.001",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "xDAI",
+    "min_amount": "0",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "ETHLINEA",
+    "min_amount": "0",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "LINEA",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDCLINEA",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDTLINEA",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "WBTCLINEA",
+    "min_amount": "0.001",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "LTC",
+    "min_amount": "0.05",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "ETHOP",
+    "min_amount": "0",
+    "max_amount": "0.001111111111111111111111111111",
+    "fee_percent": "1.7",
+    "available_balance": "0.00113"
+  },
+  {
+    "currency": "LINKOP",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "OP",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDCOP",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDTOP",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "WBTCOP",
+    "min_amount": "0.001",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "LINKPOL",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "POL",
+    "min_amount": "5",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDCPOL",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDTPOL",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "WBTCPOL",
+    "min_amount": "0.001",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "ETHSCR",
+    "min_amount": "0",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "SCR",
+    "min_amount": "0.01",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDCSCR",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDTSCR",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "WBTCSCR",
+    "min_amount": "0.001",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "DOGETRC20",
+    "min_amount": "100",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "ETHTRC20",
+    "min_amount": "0.002",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "LTCTRC20",
+    "min_amount": "0.05",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "TRX",
+    "min_amount": "5",
+    "max_amount": "791.7699115044247787610619469",
+    "fee_percent": "1.7",
+    "available_balance": "805.23"
+  },
+  {
+    "currency": "USDCTRC20",
+    "min_amount": "25",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDTTRC20",
+    "min_amount": "25",
+    "max_amount": "38.34808259587020648967551622",
+    "fee_percent": "1.7",
+    "available_balance": "39"
+  },
+  {
+    "currency": "WBTCTRC20",
+    "min_amount": "0.001",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "LINKZK",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDCZK",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "USDTZK",
+    "min_amount": "1",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  },
+  {
+    "currency": "WBTCZK",
+    "min_amount": "0.001",
+    "max_amount": "0",
+    "fee_percent": "1.7",
+    "available_balance": "0"
+  }
+]
