@@ -68,11 +68,14 @@ class TestAsyncCurrencies:
 
     @pytest.mark.asyncio
     async def test_rates(self, httpx_mock):
-        httpx_mock.add_response(json=[{"name": "BTC", "rate": "67500.00"}])
+        # rates() is derived from list() — the /rates endpoint no longer exists
+        httpx_mock.add_response(json=MOCK_CURRENCIES)
         async with AsyncNordPay() as client:
             result = await client.currencies.rates()
-        assert len(result) == 1
+        assert len(result) == 2
+        assert result[0].name == "BTC"
         assert result[0].rate == Decimal("67500.00")
+        assert httpx_mock.get_requests()[0].url.path == "/v1/currencies/"
 
 
 class TestAsyncFiatCurrencies:
@@ -86,10 +89,13 @@ class TestAsyncFiatCurrencies:
 
     @pytest.mark.asyncio
     async def test_rates(self, httpx_mock):
-        httpx_mock.add_response(json=[{"code": "USD", "rate": "1.0"}])
+        # rates() is derived from list() — the /rates endpoint no longer exists
+        httpx_mock.add_response(json=MOCK_FIAT_CURRENCIES)
         async with AsyncNordPay() as client:
             result = await client.fiat_currencies.rates()
+        assert len(result) == 2
         assert result[0].code == "USD"
+        assert httpx_mock.get_requests()[0].url.path == "/v1/fiat-currencies/"
 
 
 # ---------------------------------------------------------------------------
@@ -112,11 +118,13 @@ class TestAsyncInvoices:
 
     @pytest.mark.asyncio
     async def test_list(self, httpx_mock):
-        httpx_mock.add_response(json=[MOCK_INVOICE])
+        # list() now paginates over /v1/invoice/list (bare /v1/invoice/ was removed)
+        httpx_mock.add_response(json=MOCK_PAGINATED_INVOICES)
         async with AsyncNordPay("test-key") as client:
             result = await client.invoices.list()
         assert len(result) == 1
         assert isinstance(result[0], Invoice)
+        assert httpx_mock.get_requests()[0].url.path == "/v1/invoice/list"
 
     @pytest.mark.asyncio
     async def test_get(self, httpx_mock):
@@ -186,11 +194,13 @@ class TestAsyncInvoices:
 class TestAsyncWallets:
     @pytest.mark.asyncio
     async def test_list(self, httpx_mock):
-        httpx_mock.add_response(json=[MOCK_WALLET])
+        # list() now paginates over /v1/wallet/list (bare /v1/wallet/ was removed)
+        httpx_mock.add_response(json=MOCK_PAGINATED_WALLETS)
         async with AsyncNordPay("test-key") as client:
             wallets = await client.wallets.list()
         assert len(wallets) == 1
         assert isinstance(wallets[0], Wallet)
+        assert httpx_mock.get_requests()[0].url.path == "/v1/wallet/list"
 
     @pytest.mark.asyncio
     async def test_create(self, httpx_mock):
@@ -260,9 +270,11 @@ class TestAsyncWallets:
 class TestAsyncBalance:
     @pytest.mark.asyncio
     async def test_get(self, httpx_mock):
-        httpx_mock.add_response(json=[
-            {"currency": "BTC", "amount": "0.5", "amount_usd": "33750.00"},
-        ])
+        httpx_mock.add_response(
+            json=[
+                {"currency": "BTC", "amount": "0.5", "amount_usd": "33750.00"},
+            ]
+        )
         async with AsyncNordPay("test-key") as client:
             balances = await client.balance.get()
         assert len(balances) == 1
@@ -271,10 +283,12 @@ class TestAsyncBalance:
     @pytest.mark.asyncio
     async def test_get_dict_format(self, httpx_mock):
         """API returns balances as a flat dict: {"BTC": "0.05", ...}."""
-        httpx_mock.add_response(json={
-            "BTC": "0.05230000",
-            "USDTERC20": "1000.00",
-        })
+        httpx_mock.add_response(
+            json={
+                "BTC": "0.05230000",
+                "USDTERC20": "1000.00",
+            }
+        )
         async with AsyncNordPay("test-key") as client:
             balances = await client.balance.get()
         assert len(balances) == 2
@@ -410,7 +424,7 @@ class TestAsyncClientLifecycle:
 
     @pytest.mark.asyncio
     async def test_api_key_header(self, httpx_mock):
-        httpx_mock.add_response(json=[MOCK_INVOICE])
+        httpx_mock.add_response(json=MOCK_PAGINATED_INVOICES)
         async with AsyncNordPay("async-key") as client:
             await client.invoices.list()
         req = httpx_mock.get_requests()[0]

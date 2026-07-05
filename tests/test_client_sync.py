@@ -84,12 +84,15 @@ class TestSyncCurrencies:
         assert usdt.contract is not None
 
     def test_rates(self, httpx_mock):
-        httpx_mock.add_response(json=[{"name": "BTC", "rate": "67500.00"}, {"name": "ETH", "rate": "3500.00"}])
+        # rates() is derived from list() — the /rates endpoint no longer exists
+        httpx_mock.add_response(json=MOCK_CURRENCIES)
         with NordPay() as client:
             result = client.currencies.rates()
         assert len(result) == 2
         assert isinstance(result[0], CurrencyRate)
+        assert result[0].name == "BTC"
         assert result[0].rate == Decimal("67500.00")
+        assert httpx_mock.get_requests()[0].url.path == "/v1/currencies/"
 
     def test_no_auth_required(self, httpx_mock):
         """Currency endpoints work without API key."""
@@ -117,12 +120,14 @@ class TestSyncFiatCurrencies:
         assert result[1].supports_sepa is True
 
     def test_rates(self, httpx_mock):
-        httpx_mock.add_response(json=[{"code": "USD", "rate": "1.0"}, {"code": "EUR", "rate": "0.92"}])
+        # rates() is derived from list() — the /rates endpoint no longer exists
+        httpx_mock.add_response(json=MOCK_FIAT_CURRENCIES)
         with NordPay() as client:
             result = client.fiat_currencies.rates()
         assert len(result) == 2
         assert isinstance(result[0], FiatCurrencyRate)
-        assert result[1].rate == Decimal("0.92")
+        assert result[0].code == "USD"
+        assert httpx_mock.get_requests()[0].url.path == "/v1/fiat-currencies/"
 
 
 # ---------------------------------------------------------------------------
@@ -171,14 +176,16 @@ class TestSyncInvoices:
         assert body["allowed_currencies"] == ["BTC", "USDTERC20"]
 
     def test_list(self, httpx_mock):
-        httpx_mock.add_response(json=[MOCK_INVOICE, MOCK_INVOICE])
+        # list() now paginates over /v1/invoice/list (bare /v1/invoice/ was removed)
+        httpx_mock.add_response(json=MOCK_PAGINATED_INVOICES)
         with NordPay("test-key") as client:
             result = client.invoices.list()
-        assert len(result) == 2
+        assert len(result) == 1
         assert all(isinstance(inv, Invoice) for inv in result)
+        assert httpx_mock.get_requests()[0].url.path == "/v1/invoice/list"
 
     def test_list_empty(self, httpx_mock):
-        httpx_mock.add_response(json=[])
+        httpx_mock.add_response(json={"items": [], "total": 0, "offset": 0, "limit": 50, "total_pages": 0})
         with NordPay("test-key") as client:
             result = client.invoices.list()
         assert result == []
@@ -283,13 +290,14 @@ class TestSyncInvoices:
 
 class TestSyncWallets:
     def test_list(self, httpx_mock):
-        httpx_mock.add_response(json=[MOCK_WALLET])
+        # list() now paginates over /v1/wallet/list (bare /v1/wallet/ was removed)
+        httpx_mock.add_response(json=MOCK_PAGINATED_WALLETS)
         with NordPay("test-key") as client:
             wallets = client.wallets.list()
         assert len(wallets) == 1
         assert isinstance(wallets[0], Wallet)
         assert wallets[0].currency == "BTC"
-        assert wallets[0].status == "active"
+        assert httpx_mock.get_requests()[0].url.path == "/v1/wallet/list"
 
     def test_get(self, httpx_mock):
         httpx_mock.add_response(json=MOCK_WALLET)
@@ -351,7 +359,9 @@ class TestSyncWallets:
         httpx_mock.add_response(json=MOCK_PAGINATED_WALLETS)
         with NordPay("test-key") as client:
             client.wallets.list_paginated(
-                currency="BTC", status="active", sort="created_at:desc",
+                currency="BTC",
+                status="active",
+                sort="created_at:desc",
             )
         url = str(httpx_mock.get_requests()[0].url)
         assert "status=active" in url
@@ -390,10 +400,12 @@ class TestSyncWallets:
 class TestSyncBalance:
     def test_get_list_format(self, httpx_mock):
         """API returns balances as a list."""
-        httpx_mock.add_response(json=[
-            {"currency": "BTC", "amount": "0.5", "amount_usd": "33750.00"},
-            {"currency": "USDTERC20", "amount": "1000.00", "amount_usd": "1000.00"},
-        ])
+        httpx_mock.add_response(
+            json=[
+                {"currency": "BTC", "amount": "0.5", "amount_usd": "33750.00"},
+                {"currency": "USDTERC20", "amount": "1000.00", "amount_usd": "1000.00"},
+            ]
+        )
         with NordPay("test-key") as client:
             balances = client.balance.get()
         assert len(balances) == 2
@@ -403,11 +415,13 @@ class TestSyncBalance:
 
     def test_get_dict_format(self, httpx_mock):
         """API returns balances as a flat dict: {"BTC": "0.05", ...}."""
-        httpx_mock.add_response(json={
-            "BTC": "0.05230000",
-            "USDTERC20": "1000.00",
-            "ETH": "0",
-        })
+        httpx_mock.add_response(
+            json={
+                "BTC": "0.05230000",
+                "USDTERC20": "1000.00",
+                "ETH": "0",
+            }
+        )
         with NordPay("test-key") as client:
             balances = client.balance.get()
         assert len(balances) == 3
@@ -437,7 +451,9 @@ class TestSyncBalance:
         httpx_mock.add_response(json=MOCK_WITHDRAW_HISTORY)
         with NordPay("test-key") as client:
             client.balance.withdraw_history(
-                currency="BTC", status="completed", sort="created_at:desc",
+                currency="BTC",
+                status="completed",
+                sort="created_at:desc",
             )
         url = str(httpx_mock.get_requests()[0].url)
         assert "currency=BTC" in url
@@ -602,7 +618,7 @@ class TestSyncClientConfig:
         # Should not raise after close
 
     def test_api_key_in_headers(self, httpx_mock):
-        httpx_mock.add_response(json=[MOCK_INVOICE])
+        httpx_mock.add_response(json=MOCK_PAGINATED_INVOICES)
         with NordPay("my-secret-key") as client:
             client.invoices.list()
         req = httpx_mock.get_requests()[0]
@@ -658,7 +674,9 @@ class TestSyncValidation:
     def test_invoice_too_few_allowed_currencies(self):
         with NordPay("key") as client, pytest.raises(ValueError, match="at least 2"):
             client.invoices.create(
-                amount="100 USD", label="Test", expires_time=60,
+                amount="100 USD",
+                label="Test",
+                expires_time=60,
                 allowed_currencies=["BTC"],
             )
 
@@ -678,29 +696,64 @@ class TestSyncValidation:
 
 class TestSyncAutoPaginate:
     def test_invoices_single_page(self, httpx_mock):
-        httpx_mock.add_response(json={
-            "items": [{"id": 1, "uuid": "a", "amount": "1", "amount_usd": "1",
-                       "received_amount": "0", "received_amount_usd": "0",
-                       "label": "x", "created_at": "2026-01-01T00:00:00Z",
-                       "expires_at": "2026-01-01T01:00:00Z", "status": "paid"}],
-            "total": 1, "offset": 0, "limit": 50, "total_pages": 1,
-        })
+        httpx_mock.add_response(
+            json={
+                "items": [
+                    {
+                        "id": 1,
+                        "uuid": "a",
+                        "amount": "1",
+                        "amount_usd": "1",
+                        "received_amount": "0",
+                        "received_amount_usd": "0",
+                        "label": "x",
+                        "created_at": "2026-01-01T00:00:00Z",
+                        "expires_at": "2026-01-01T01:00:00Z",
+                        "status": "paid",
+                    }
+                ],
+                "total": 1,
+                "offset": 0,
+                "limit": 50,
+                "total_pages": 1,
+            }
+        )
         with NordPay("key") as client:
             items = list(client.invoices.auto_paginate())
         assert len(items) == 1
         assert isinstance(items[0], Invoice)
 
     def test_invoices_multiple_pages(self, httpx_mock):
-        inv = {"id": 1, "uuid": "a", "amount": "1", "amount_usd": "1",
-               "received_amount": "0", "received_amount_usd": "0",
-               "label": "x", "created_at": "2026-01-01T00:00:00Z",
-               "expires_at": "2026-01-01T01:00:00Z", "status": "paid"}
-        httpx_mock.add_response(json={
-            "items": [inv, inv], "total": 3, "offset": 0, "limit": 2, "total_pages": 2,
-        })
-        httpx_mock.add_response(json={
-            "items": [inv], "total": 3, "offset": 2, "limit": 2, "total_pages": 2,
-        })
+        inv = {
+            "id": 1,
+            "uuid": "a",
+            "amount": "1",
+            "amount_usd": "1",
+            "received_amount": "0",
+            "received_amount_usd": "0",
+            "label": "x",
+            "created_at": "2026-01-01T00:00:00Z",
+            "expires_at": "2026-01-01T01:00:00Z",
+            "status": "paid",
+        }
+        httpx_mock.add_response(
+            json={
+                "items": [inv, inv],
+                "total": 3,
+                "offset": 0,
+                "limit": 2,
+                "total_pages": 2,
+            }
+        )
+        httpx_mock.add_response(
+            json={
+                "items": [inv],
+                "total": 3,
+                "offset": 2,
+                "limit": 2,
+                "total_pages": 2,
+            }
+        )
         with NordPay("key") as client:
             items = list(client.invoices.auto_paginate(limit=2))
         assert len(items) == 3
@@ -708,6 +761,7 @@ class TestSyncAutoPaginate:
 
     def test_wallets_auto_paginate(self, httpx_mock):
         from .conftest import MOCK_PAGINATED_WALLETS
+
         httpx_mock.add_response(json=MOCK_PAGINATED_WALLETS)
         with NordPay("key") as client:
             items = list(client.wallets.auto_paginate())
@@ -716,6 +770,7 @@ class TestSyncAutoPaginate:
 
     def test_withdraws_auto_paginate(self, httpx_mock):
         from .conftest import MOCK_WITHDRAW_HISTORY
+
         httpx_mock.add_response(json=MOCK_WITHDRAW_HISTORY)
         with NordPay("key") as client:
             items = list(client.balance.auto_paginate_withdraws())

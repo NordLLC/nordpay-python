@@ -221,9 +221,12 @@ class _SyncCurrencies:
         return [Currency.model_validate(item) for item in data]
 
     def rates(self) -> list[CurrencyRate]:
-        """Get current exchange rates for all cryptocurrencies."""
-        data = self._t.request("GET", "/v1/currencies/rates")
-        return [CurrencyRate.model_validate(item) for item in data]
+        """Get current exchange rates for all cryptocurrencies.
+
+        Derived from :meth:`list` — the API embeds ``rate`` in each currency and no
+        longer exposes a dedicated ``/rates`` endpoint.
+        """
+        return [CurrencyRate(name=c.name, rate=c.rate) for c in self.list() if c.rate is not None]
 
 
 class _SyncFiatCurrencies:
@@ -236,9 +239,12 @@ class _SyncFiatCurrencies:
         return [FiatCurrency.model_validate(item) for item in data]
 
     def rates(self) -> list[FiatCurrencyRate]:
-        """Get current exchange rates for all fiat currencies."""
-        data = self._t.request("GET", "/v1/fiat-currencies/rates")
-        return [FiatCurrencyRate.model_validate(item) for item in data]
+        """Get current exchange rates for all fiat currencies.
+
+        Derived from :meth:`list` — the API embeds ``rate`` in each fiat currency and
+        no longer exposes a dedicated ``/rates`` endpoint.
+        """
+        return [FiatCurrencyRate(code=f.code, rate=f.rate) for f in self.list()]
 
 
 class _SyncInvoices:
@@ -246,9 +252,11 @@ class _SyncInvoices:
         self._t = transport
 
     def list(self) -> list[Invoice]:
-        """Get all invoices."""
-        data = self._t.request("GET", "/v1/invoice/")
-        return [Invoice.model_validate(item) for item in data]
+        """Get all invoices (paginates over ``/v1/invoice/list``).
+
+        For large accounts prefer :meth:`auto_paginate` (lazy) or :meth:`list_paginated`.
+        """
+        return list(self.auto_paginate())
 
     def get(self, identifier: str | int) -> Invoice:
         """Get invoice by ID or UUID.
@@ -349,9 +357,14 @@ class _SyncInvoices:
             sort: Sort expression, e.g. ``"created_at:desc"``.
         """
         params = _paginated_params(
-            q=q, currency=currency, status=status,
-            start_date=start_date, end_date=end_date,
-            offset=offset, limit=limit, sort=sort,
+            q=q,
+            currency=currency,
+            status=status,
+            start_date=start_date,
+            end_date=end_date,
+            offset=offset,
+            limit=limit,
+            sort=sort,
         )
         data = self._t.request("GET", "/v1/invoice/list", params=params)
         return PaginatedInvoices.model_validate(data)
@@ -374,9 +387,14 @@ class _SyncInvoices:
         offset = 0
         while True:
             page = self.list_paginated(
-                q=q, currency=currency, status=status,
-                start_date=start_date, end_date=end_date,
-                offset=offset, limit=limit, sort=sort,
+                q=q,
+                currency=currency,
+                status=status,
+                start_date=start_date,
+                end_date=end_date,
+                offset=offset,
+                limit=limit,
+                sort=sort,
             )
             yield from page.items
             offset += limit
@@ -413,9 +431,11 @@ class _SyncWallets:
         self._t = transport
 
     def list(self) -> list[Wallet]:
-        """Get all wallets."""
-        data = self._t.request("GET", "/v1/wallet/")
-        return [Wallet.model_validate(item) for item in data]
+        """Get all wallets (paginates over ``/v1/wallet/list``).
+
+        For large accounts prefer :meth:`auto_paginate` (lazy) or :meth:`list_paginated`.
+        """
+        return list(self.auto_paginate())
 
     def get(self, wallet_id: int) -> Wallet:
         """Get wallet by ID."""
@@ -494,8 +514,12 @@ class _SyncWallets:
             sort: Sort expression, e.g. ``"created_at:desc"``.
         """
         params = _paginated_params(
-            q=q, currency=currency, status=status,
-            offset=offset, limit=limit, sort=sort,
+            q=q,
+            currency=currency,
+            status=status,
+            offset=offset,
+            limit=limit,
+            sort=sort,
         )
         data = self._t.request("GET", "/v1/wallet/list", params=params)
         return PaginatedWallets.model_validate(data)
@@ -513,8 +537,12 @@ class _SyncWallets:
         offset = 0
         while True:
             page = self.list_paginated(
-                q=q, currency=currency, status=status,
-                offset=offset, limit=limit, sort=sort,
+                q=q,
+                currency=currency,
+                status=status,
+                offset=offset,
+                limit=limit,
+                sort=sort,
             )
             yield from page.items
             offset += limit
@@ -604,8 +632,11 @@ class _SyncBalance:
         offset = 0
         while True:
             page = self.withdraw_history(
-                currency=currency, status=status,
-                offset=offset, limit=limit, sort=sort,
+                currency=currency,
+                status=status,
+                offset=offset,
+                limit=limit,
+                sort=sort,
             )
             yield from page.items
             offset += limit
@@ -699,9 +730,12 @@ class _AsyncCurrencies:
         return [Currency.model_validate(item) for item in data]
 
     async def rates(self) -> list[CurrencyRate]:
-        """Get current exchange rates for all cryptocurrencies."""
-        data = await self._t.request("GET", "/v1/currencies/rates")
-        return [CurrencyRate.model_validate(item) for item in data]
+        """Get current exchange rates for all cryptocurrencies.
+
+        Derived from :meth:`list` — the API embeds ``rate`` in each currency and no
+        longer exposes a dedicated ``/rates`` endpoint.
+        """
+        return [CurrencyRate(name=c.name, rate=c.rate) for c in await self.list() if c.rate is not None]
 
 
 class _AsyncFiatCurrencies:
@@ -714,9 +748,12 @@ class _AsyncFiatCurrencies:
         return [FiatCurrency.model_validate(item) for item in data]
 
     async def rates(self) -> list[FiatCurrencyRate]:
-        """Get current exchange rates for all fiat currencies."""
-        data = await self._t.request("GET", "/v1/fiat-currencies/rates")
-        return [FiatCurrencyRate.model_validate(item) for item in data]
+        """Get current exchange rates for all fiat currencies.
+
+        Derived from :meth:`list` — the API embeds ``rate`` in each fiat currency and
+        no longer exposes a dedicated ``/rates`` endpoint.
+        """
+        return [FiatCurrencyRate(code=f.code, rate=f.rate) for f in await self.list()]
 
 
 class _AsyncInvoices:
@@ -724,9 +761,11 @@ class _AsyncInvoices:
         self._t = transport
 
     async def list(self) -> list[Invoice]:
-        """Get all invoices."""
-        data = await self._t.request("GET", "/v1/invoice/")
-        return [Invoice.model_validate(item) for item in data]
+        """Get all invoices (paginates over ``/v1/invoice/list``).
+
+        For large accounts prefer :meth:`auto_paginate` (lazy) or :meth:`list_paginated`.
+        """
+        return [inv async for inv in self.auto_paginate()]
 
     async def get(self, identifier: str | int) -> Invoice:
         """Get invoice by ID or UUID."""
@@ -806,9 +845,14 @@ class _AsyncInvoices:
     ) -> PaginatedInvoices:
         """List invoices with pagination, filtering, and sorting."""
         params = _paginated_params(
-            q=q, currency=currency, status=status,
-            start_date=start_date, end_date=end_date,
-            offset=offset, limit=limit, sort=sort,
+            q=q,
+            currency=currency,
+            status=status,
+            start_date=start_date,
+            end_date=end_date,
+            offset=offset,
+            limit=limit,
+            sort=sort,
         )
         data = await self._t.request("GET", "/v1/invoice/list", params=params)
         return PaginatedInvoices.model_validate(data)
@@ -828,9 +872,14 @@ class _AsyncInvoices:
         offset = 0
         while True:
             page = await self.list_paginated(
-                q=q, currency=currency, status=status,
-                start_date=start_date, end_date=end_date,
-                offset=offset, limit=limit, sort=sort,
+                q=q,
+                currency=currency,
+                status=status,
+                start_date=start_date,
+                end_date=end_date,
+                offset=offset,
+                limit=limit,
+                sort=sort,
             )
             for item in page.items:
                 yield item
@@ -859,9 +908,11 @@ class _AsyncWallets:
         self._t = transport
 
     async def list(self) -> list[Wallet]:
-        """Get all wallets."""
-        data = await self._t.request("GET", "/v1/wallet/")
-        return [Wallet.model_validate(item) for item in data]
+        """Get all wallets (paginates over ``/v1/wallet/list``).
+
+        For large accounts prefer :meth:`auto_paginate` (lazy) or :meth:`list_paginated`.
+        """
+        return [w async for w in self.auto_paginate()]
 
     async def get(self, wallet_id: int) -> Wallet:
         """Get wallet by ID."""
@@ -912,8 +963,12 @@ class _AsyncWallets:
     ) -> PaginatedWallets:
         """List wallets with pagination, filtering, and sorting."""
         params = _paginated_params(
-            q=q, currency=currency, status=status,
-            offset=offset, limit=limit, sort=sort,
+            q=q,
+            currency=currency,
+            status=status,
+            offset=offset,
+            limit=limit,
+            sort=sort,
         )
         data = await self._t.request("GET", "/v1/wallet/list", params=params)
         return PaginatedWallets.model_validate(data)
@@ -931,8 +986,12 @@ class _AsyncWallets:
         offset = 0
         while True:
             page = await self.list_paginated(
-                q=q, currency=currency, status=status,
-                offset=offset, limit=limit, sort=sort,
+                q=q,
+                currency=currency,
+                status=status,
+                offset=offset,
+                limit=limit,
+                sort=sort,
             )
             for item in page.items:
                 yield item
@@ -1005,8 +1064,11 @@ class _AsyncBalance:
         offset = 0
         while True:
             page = await self.withdraw_history(
-                currency=currency, status=status,
-                offset=offset, limit=limit, sort=sort,
+                currency=currency,
+                status=status,
+                offset=offset,
+                limit=limit,
+                sort=sort,
             )
             for item in page.items:
                 yield item
@@ -1057,7 +1119,5 @@ class _AsyncWithdrawals:
 
     async def confirm_multiple(self, identifier: str) -> WithdrawConfirmation:
         """Confirm a pending batch withdrawal."""
-        data = await self._t.request(
-            "POST", "/v1/balance/withdraw/multiple/confirm", json={"identifier": identifier}
-        )
+        data = await self._t.request("POST", "/v1/balance/withdraw/multiple/confirm", json={"identifier": identifier})
         return WithdrawConfirmation.model_validate(data)

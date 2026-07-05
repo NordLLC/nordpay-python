@@ -75,6 +75,8 @@ class Invoice(BaseModel):
     uuid: str
     currency: str | None = None
     allowed_currencies: list[str] | None = None
+    tx_hash: str | None = None
+    explorer_url: str | None = None
     address: str | None = None
     amount: Decimal
     amount_usd: Decimal
@@ -94,7 +96,6 @@ class CreatedInvoice(Invoice):
 
     confirmations: int = 0
     url: str
-    tx_hash: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -129,13 +130,14 @@ class Transaction(BaseModel):
     source: dict[str, Any] = Field(default_factory=dict)
     amount: Decimal
     amount_usd: Decimal
-    network_fee: Decimal
-    network_fee_usd: Decimal
-    service_fee: Decimal
-    service_fee_usd: Decimal
-    tx_hash: str
+    network_fee: Decimal | None = None
+    network_fee_usd: Decimal | None = None
+    service_fee: Decimal | None = None
+    service_fee_usd: Decimal | None = None
+    tx_hash: str | None = None
+    explorer_url: str | None = None
     status: Literal["pending", "paid", "cancelled", "refunded"]
-    is_postback_sent: bool
+    is_postback_sent: bool = False
     created_at: datetime
 
 
@@ -243,6 +245,8 @@ class InvoiceSummary(BaseModel):
     paid_count: int
     pending_count: int
     expired_count: int
+    cancelled_count: int = 0
+    partially_paid_count: int = 0
     total_amount_usd: Decimal
     paid_amount_usd: Decimal
 
