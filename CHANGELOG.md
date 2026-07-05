@@ -3,6 +3,15 @@
 All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [1.3.1] — 2026-07-06
+
+### Fixed
+- `base_url` ending in `/v1` or `/v1/` no longer produces doubled
+  `/v1/v1/...` request paths. The client now normalizes the base URL, so
+  both `https://api.nord-pay.com` and `https://api.nord-pay.com/v1` behave
+  identically. Previously a trailing `/v1/` caused `404`s (and noisy
+  server-side 500s in request instrumentation) on every call.
+
 ## [1.3.0] — 2026-07-05
 
 Alignment with the current NordPay merchant `/v1/` API. Verified against live

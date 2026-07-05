@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "nordpay"
-version = "1.3.0"
+version = "1.3.1"
 description = "Official Python SDK for NordPay API — crypto payment processing"
 readme = "README.md"
 license = "MIT"

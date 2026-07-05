@@ -29,6 +29,23 @@ MAX_RETRIES = 3
 RETRY_BACKOFF = 0.5  # seconds — multiplied by 2^attempt
 RETRY_STATUS_CODES = frozenset({429, 500, 502, 503, 504})
 
+
+def _normalize_base_url(base_url: str) -> str:
+    """Strip a trailing slash and an accidental ``/v1`` suffix from ``base_url``.
+
+    Every SDK request path already carries the ``/v1`` prefix (e.g.
+    ``/v1/invoice/create``). If a caller sets ``base_url`` to
+    ``https://api.nord-pay.com/v1`` or ``.../v1/`` — a common copy-paste
+    mistake — httpx joins it into a doubled ``/v1/v1/...`` path that 404s on
+    the server (and 500s its request-instrumentation). Normalize it away so
+    both spellings behave identically.
+    """
+    normalized = base_url.rstrip("/")
+    if normalized.endswith("/v1"):
+        normalized = normalized[: -len("/v1")]
+    return normalized or base_url
+
+
 _ERROR_MAP: dict[int, type[NordPayError]] = {
     400: BadRequestError,
     401: AuthenticationError,
@@ -143,7 +160,7 @@ class SyncTransport:
         if max_retries < 0:
             raise ValueError("max_retries must be >= 0")
         self._client = httpx.Client(
-            base_url=base_url,
+            base_url=_normalize_base_url(base_url),
             headers=_build_headers(api_key),
             timeout=timeout,
         )
@@ -201,7 +218,7 @@ class AsyncTransport:
         if max_retries < 0:
             raise ValueError("max_retries must be >= 0")
         self._client = httpx.AsyncClient(
-            base_url=base_url,
+            base_url=_normalize_base_url(base_url),
             headers=_build_headers(api_key),
             timeout=timeout,
         )

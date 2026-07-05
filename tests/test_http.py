@@ -6,7 +6,7 @@ import httpx
 import pytest
 
 from nordpay import NordPay, NordPayError, RateLimitError, ServerError
-from nordpay._http import _build_headers, _parse_error
+from nordpay._http import _build_headers, _normalize_base_url, _parse_error
 from nordpay.exceptions import ConnectionError as NordPayConnectionError
 from nordpay.exceptions import TimeoutError as NordPayTimeoutError
 
@@ -226,3 +226,25 @@ class TestNetworkErrors:
         """Both network error types inherit from NordPayError."""
         assert issubclass(NordPayTimeoutError, NordPayError)
         assert issubclass(NordPayConnectionError, NordPayError)
+
+
+# ---------------------------------------------------------------------------
+# base_url normalization (guards against doubled /v1/v1/ paths)
+# ---------------------------------------------------------------------------
+
+
+class TestNormalizeBaseUrl:
+    """Every request path already carries ``/v1``; base_url must not repeat it."""
+
+    @pytest.mark.parametrize(
+        ("given", "expected"),
+        [
+            ("https://api.nord-pay.com", "https://api.nord-pay.com"),
+            ("https://api.nord-pay.com/", "https://api.nord-pay.com"),
+            ("https://api.nord-pay.com/v1", "https://api.nord-pay.com"),
+            ("https://api.nord-pay.com/v1/", "https://api.nord-pay.com"),
+            ("https://staging.nord-pay.com/v1//", "https://staging.nord-pay.com"),
+        ],
+    )
+    def test_strips_trailing_slash_and_v1(self, given, expected):
+        assert _normalize_base_url(given) == expected
