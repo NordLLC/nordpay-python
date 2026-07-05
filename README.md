@@ -61,8 +61,8 @@ asyncio.run(main())
 ```python
 client = NordPay()  # no API key needed
 
-currencies = client.currencies.list()
-rates = client.currencies.rates()
+currencies = client.currencies.list()   # each Currency carries its own `.rate`
+rates = client.currencies.rates()        # convenience view derived from list()
 fiats = client.fiat_currencies.list()
 fiat_rates = client.fiat_currencies.rates()
 ```
@@ -83,8 +83,9 @@ invoice = client.invoices.create(
 )
 
 # List / Get
-invoices = client.invoices.list()
+invoices = client.invoices.list()   # paginates over all invoices
 inv = client.invoices.get("uuid-or-id")
+print(inv.status, inv.tx_hash, inv.explorer_url)  # tx_hash / explorer_url populate once paid
 
 # Paginated list with filters
 page = client.invoices.list_paginated(
@@ -98,7 +99,11 @@ for inv in client.invoices.auto_paginate(status="paid"):
 
 # Summary statistics
 summary = client.invoices.summary()
-print(f"Total: {summary.total_count}, Paid: {summary.paid_count}")
+print(
+    f"Total: {summary.total_count}, Paid: {summary.paid_count}, "
+    f"Pending: {summary.pending_count}, Cancelled: {summary.cancelled_count}, "
+    f"Partially paid: {summary.partially_paid_count}"
+)
 
 # Transactions
 txs = client.invoices.transactions()                    # all invoices
