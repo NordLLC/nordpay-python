@@ -1,0 +1,60 @@
+name: release
+
+# Publish to PyPI on a version tag (e.g. `git tag v1.4.0 && git push --tags`).
+# Auth is PyPI Trusted Publishing (OIDC) — no token is stored in the repo.
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - name: Lint
+        run: |
+          uv run --extra dev ruff check nordpay tests
+          uv run --extra dev ruff format --check nordpay tests
+      - name: Test
+        run: uv run --extra dev pytest -q
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Verify tag matches package version
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG="$(uv run python -c 'import nordpay; print(nordpay.__version__)')"
+          echo "tag=$TAG package=$PKG"
+          test "$TAG" = "$PKG" || { echo "::error::tag v$TAG != package version $PKG"; exit 1; }
+      - name: Build sdist + wheel
+        run: uv build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write  # required for Trusted Publishing (OIDC)
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
